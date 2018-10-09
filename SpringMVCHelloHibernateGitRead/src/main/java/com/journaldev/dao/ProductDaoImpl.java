@@ -27,6 +27,16 @@ public class ProductDaoImpl implements ProductDao {
 		session.flush();
 	}
 
+	
+	public void editProduct(Product product) {
+		// TODO Auto-generated method stub
+		
+		Session session = sessionFactory.getCurrentSession();
+		session.saveOrUpdate(product);
+		session.flush();
+	}
+	
+	
 	@Override
 	public Product getProductById(String id) {
 		// TODO Auto-generated method stub
