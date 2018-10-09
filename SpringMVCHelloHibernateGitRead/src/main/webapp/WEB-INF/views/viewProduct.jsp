@@ -15,8 +15,9 @@
     
     <div class ="col-md-5"><!-- determines the width of the part of the grid specified for the particular type of information -->
     
-    <img src ="#" alt="image" style="width:100%: height: 300px"/><!-- image content -->
-    
+   <!--<img src ="#" alt="image" style="width:100%: height: 300px"/>--><!-- image content but this replaced by below when image uploaded really ie after setting the path and all in the home controller page -->
+    <img src="<c:url value="/resources/images/${product.productId}.png" />"
+					              alt="image" style="width:100%"/>
     </div>
     
     <div class ="col-md-5">

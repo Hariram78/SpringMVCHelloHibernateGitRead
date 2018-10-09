@@ -1,10 +1,16 @@
 package com.journaldev.spring;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +23,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.journaldev.dao.ProductDao;
@@ -28,6 +35,8 @@ import com.journaldev.model.Product;
 @Controller
 
 public class HomeController {
+	
+	Path path;
 	
 	@Autowired
 	private ProductDao productDao;
@@ -117,12 +126,51 @@ public class HomeController {
     }
    
     @RequestMapping(value= "/admin/productInventory/addProduct",method=RequestMethod.POST)
-    public String addProductPost(@ModelAttribute("product") Product product)
+    public String addProductPost(@ModelAttribute("product") Product product,HttpServletRequest request)
     {
     	productDao.addProduct(product);
+    	
+    	MultipartFile productImage = product.getProductImage();
+    	
+    	String rootDirectory = request.getSession().getServletContext().getRealPath("/");
+    	path=Paths.get(rootDirectory+"\\WEB-INF\\resources\\images"+product.getProductId()+".png");
+    	
+    	if(productImage!=null && !productImage.isEmpty()) {
+    		try {
+    			productImage.transferTo(new File(path.toString()));
+    		}catch(Exception e)
+    		{
+    			e.printStackTrace();
+    			throw new RuntimeException("Product image saving failed",e);
+    		}
+    	}
     	return "redirect:/admin/productInventory";
     //	return "ProductInventory";
     }
+    
+    
+    @RequestMapping("/admin/productInventory/deleteProduct/{id}")
+    public String deleteProduct(@PathVariable String id, Model model){
+
+    /*	String rootDirectory = request.getSession().getServletContext().getRealPath("/");
+    	path=Paths.get(rootDirectory+"\\WEB-INF\\resources\\images"+id+".png");
+    	
+    	if(Files.exists(path)) {
+    		try {
+    			Files.delete(path);
+    		}catch(IOException e)
+    		{
+    			e.printStackTrace();
+    		}
+    	}*/
+    	
+        productDao.deleteProduct(id);
+        return "redirect:/admin/productInventory";
+    }
+    
+    
+    
+    
     
 }
 
